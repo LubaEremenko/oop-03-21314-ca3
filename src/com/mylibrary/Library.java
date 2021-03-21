@@ -3,8 +3,12 @@ package com.mylibrary;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Library extends JFrame {//add GUI components to the extended class
@@ -36,24 +40,17 @@ public class Library extends JFrame {//add GUI components to the extended class
         listBooksModel = new DefaultListModel();
         listBooks.setModel(listBooksModel); // add list that can handle the data about books
 
-        btnAdd.setEnabled(false);
-        btnDelet.setEnabled(false);
-        btnEdit.setEnabled(false);
-        btnSave.setEnabled(false);
+        btnAdd.setEnabled(true);
+        btnDelet.setEnabled(true);
+        btnEdit.setEnabled(true);
+        btnSave.setEnabled(true);
 
 
 
         btnAdd.addActionListener(new ActionListener() { //is responsible for handling all action events such as when the user clicks on a component
             @Override
             public void actionPerformed(ActionEvent e) {
-                Books b = new Books(
-                        textTitle.getText(),
-                        textAuthor.getText(),
-                        textSummary.getText(),
-                        textStatus.getText()
-                );
-                books.add(b);
-                refreshBooksList();
+                btnAddClick(e); //reference on function below
             }
 
         });
@@ -61,15 +58,7 @@ public class Library extends JFrame {//add GUI components to the extended class
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int bookNumber = listBooks.getSelectedIndex();
-                if (bookNumber >=0) {
-                    Books b = books.get(bookNumber);
-                    b.setTitle(textTitle.getText());
-                    b.setAuthor(textAuthor.getText());
-                    b.setSummary(textSummary.getText());
-                    b.setStatus(textStatus.getText());
-                    refreshBooksList(); // update inside the books list
-                }
+              btnSaveClick(e);
             }
         });
 
@@ -77,7 +66,7 @@ public class Library extends JFrame {//add GUI components to the extended class
         btnEdit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                btnEditClick(e);
             }
         });
 
@@ -85,35 +74,76 @@ public class Library extends JFrame {//add GUI components to the extended class
         btnDelet.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                btnDeletClick(e);
             }
         });
 
         listBooks.addListSelectionListener(new ListSelectionListener() { // function will run anytime i click on an item inside my list
             @Override
             public void valueChanged(ListSelectionEvent e) {
-              int bookNumber =  listBooks.getSelectedIndex();      //i can find out which item i have clicked on from my list of books. It give me the number of item that i clicked on
-                if (bookNumber >= 0) {
-                    Books b = books.get(bookNumber); //get books from books list, it will get that book number
-                    textTitle.setText(b.getTitle()); //put all fields from library into the text boxes
-                    textAuthor.setText(b.getAuthor());
-                    textSummary.setText(b.getSummary());
-                    textStatus.setText(b.getStatus());
-
-                    btnSave.setEnabled(true);
-
-                    //what to do with combobox
-
-
-                } else  {
-                    btnSave.setEnabled(false);
-                }
-
-
+                listBooksSelection(e);
             }
         });
 
+
     }
+
+    public void btnAddClick(ActionEvent e) {
+        Books b = new Books(
+                textTitle.getText(),
+                textAuthor.getText(),
+                textSummary.getText(),
+                textStatus.getText()
+        );
+        books.add(b);
+        refreshBooksList();
+
+    }
+    public void btnEditClick(ActionEvent e) {
+
+
+    }
+
+    public void btnSaveClick(ActionEvent e) {
+        int bookNumber = listBooks.getSelectedIndex();
+        if (bookNumber >=0) {
+            Books b = books.get(bookNumber);
+            b.setTitle(textTitle.getText());
+            b.setAuthor(textAuthor.getText());
+            b.setSummary(textSummary.getText());
+            b.setStatus(textStatus.getText());
+            refreshBooksList(); // update inside the books list
+        }
+
+    }
+    public void btnDeletClick(ActionEvent e) {
+        int a = JOptionPane.showConfirmDialog((Component)null, "Do you want to delet this book?" , "Delete", JOptionPane.YES_NO_OPTION );
+        System.out.println(a);
+        if (a == 0) {
+
+        }
+
+    }
+
+    public void listBooksSelection(ListSelectionEvent e) {
+        int bookNumber =  listBooks.getSelectedIndex();      //i can find out which item i have clicked on from my list of books. It give me the number of item that i clicked on
+        if (bookNumber >= 0) {
+            Books b = books.get(bookNumber); //get books from books list, it will get that book number
+            textTitle.setText(b.getTitle()); //put all fields from library into the text boxes
+            textAuthor.setText(b.getAuthor());
+            textSummary.setText(b.getSummary());
+            textStatus.setText(b.getStatus());
+
+            btnSave.setEnabled(true);
+
+            //what to do with combobox
+
+
+        } else  {
+            btnSave.setEnabled(false);
+        }
+    }
+
 
     public void refreshBooksList () { // iterate through array list and add all books in visual
         listBooksModel.removeAllElements();
