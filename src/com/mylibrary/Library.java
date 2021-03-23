@@ -9,6 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class Library extends JFrame {//add GUI components to the extended class
@@ -27,14 +30,23 @@ public class Library extends JFrame {//add GUI components to the extended class
     private JButton btnSave;
     private JButton btnEdit;
     private JButton btnDelet;
+
     private ArrayList<Books> books;
     private DefaultListModel listBooksModel;
+
+
+
+
+
 
     Library() {
         super("My ca-3 project Library"); //run the constructor
         this.setContentPane(this.panelMain); //sets the contentPane property
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //specify one of several options for the close button - Exit the application
         this.pack(); // is defined in Window class in Java and it sizes the frame so that all its contents are at or above their preferred sizes
+        listBooks.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+
 
         books = new ArrayList<Books>(); //initialise array list in constructor
         listBooksModel = new DefaultListModel();
@@ -116,12 +128,21 @@ public class Library extends JFrame {//add GUI components to the extended class
         }
 
     }
+
     public void btnDeletClick(ActionEvent e) {
         int a = JOptionPane.showConfirmDialog((Component)null, "Do you want to delet this book?" , "Delete", JOptionPane.YES_NO_OPTION );
         System.out.println(a);
         if (a == 0) {
-
+            int bookNumber = listBooks.getSelectedIndex();
+            if (bookNumber >= 0) {
+                Books b = books.get(bookNumber);
+                books.remove(bookNumber);
+                refreshBooksList(); // update inside the books list
+            }
         }
+
+
+
 
     }
 
@@ -136,7 +157,7 @@ public class Library extends JFrame {//add GUI components to the extended class
 
             btnSave.setEnabled(true);
 
-            //what to do with combobox
+
 
 
         } else  {
@@ -164,6 +185,7 @@ public class Library extends JFrame {//add GUI components to the extended class
     }
 
     public static void main(String[] args) {
+
         Library library = new Library();
         library.setVisible(true); //method makes the frame appear on the screen.
 
@@ -183,8 +205,24 @@ public class Library extends JFrame {//add GUI components to the extended class
         library.addBooks(b6);
         library.addBooks(b7);
 
+        try {
+            File libFile = new File("myLibrary.txt"); //create a file
+            PrintStream writer = new PrintStream(libFile); // create a writer
+            //loop through array and save elements
+            int index = 0; // start at index 0
+            while (index < books.length) {
+                if (books[index] != null) {
+                    writer.println(books[index]);
 
+                }
+                index = index + 1;
 
+            }
+            writer.close(); //close file connection
+        }
+        catch (FileNotFoundException fnf) {
+            System.err.println("The file was not found");
+        }
     }
 
 }
